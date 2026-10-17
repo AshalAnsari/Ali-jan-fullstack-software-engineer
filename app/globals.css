@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens
+ * ------------------------------------------------------------------
+ * One dark theme, designed rather than inverted. Warm graphite
+ * surfaces, a paper-white foreground and a single "signal" accent
+ * (ember) that marks interaction, flow and the current position.
+ * A cool steel tone is reserved for secondary data in diagrams.
+ */
+:root {
+  --background: #0b0c0e;
+  --background-secondary: #0f1013;
+  --surface: #141519;
+  --surface-hover: #1a1c21;
+  --surface-raised: #1f2127;
+  --foreground: #edeae4;
+  --muted: #a9abb1;
+  --subtle: #878a92;
+  --border: #22242a;
+  --border-strong: #30333a;
+  --primary: #ff6a3d;
+  --primary-hover: #ff8660;
+  --primary-foreground: #140a06;
+  --primary-soft: rgb(255 106 61 / 0.12);
+  --accent: #9fb6cc;
+  --accent-soft: rgb(159 182 204 / 0.12);
+  --success: #7fd1a8;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --header-h: 64px;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-raised: var(--surface-raised);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
+
+  --ease-out-expo: var(--ease-out-expo);
+
+  /* Fluid type scale — display sizes clamp between phone and 4K. */
+  --text-display: clamp(3rem, 1.6rem + 6.2vw, 8.5rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.045em;
+  --text-h1: clamp(2.5rem, 1.7rem + 3.4vw, 5rem);
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.04em;
+  --text-h2: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  --text-h2--line-height: 1.04;
+  --text-h2--letter-spacing: -0.035em;
+  --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.02em;
+  --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.14em;
+
+  --animate-pulse-dot: pulse-dot 2.4s var(--ease-out-expo) infinite;
+  --animate-flow: flow 3.2s linear infinite;
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes pulse-dot {
+  0% { box-shadow: 0 0 0 0 rgb(127 209 168 / 0.5); }
+  70%, 100% { box-shadow: 0 0 0 6px rgb(127 209 168 / 0); }
+}
+
+@keyframes flow {
+  to { stroke-dashoffset: -40; }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Entrance keyframes run in CSS so above-the-fold text paints without
+   waiting for hydration. Stagger with the --delay custom property. */
+/* Headline reveal: the text is painted from the first frame (soft and
+   slightly low, never hidden), so it doesn't hold back LCP. */
+@keyframes rise {
+  from { opacity: 0.12; filter: blur(14px); transform: translateY(0.14em); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+@keyframes draw {
+  from { transform: scaleX(0); }
+}
+
+@keyframes drop {
+  from { top: -3px; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  to { top: calc(100% - 3px); opacity: 0; }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 24px);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  /* Technical grid used behind hero and diagrams. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 55%, transparent);
+  }
+
+  .mask-radial {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(180deg, var(--foreground) 30%, rgb(237 234 228 / 0.55));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .enter-rise {
+    animation: rise 1.2s var(--ease-out-expo) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .enter-fade {
+    animation: fade-up 0.9s var(--ease-out-expo) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .enter-draw {
+    transform-origin: left;
+    animation: draw 1.2s var(--ease-out-expo) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .packet {
+    animation: drop 1.8s linear infinite;
+  }
+
+  .hairline {
+    background: linear-gradient(90deg, transparent, var(--border-strong) 20%, var(--border-strong) 80%, transparent);
+    height: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
